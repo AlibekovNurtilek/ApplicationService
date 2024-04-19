@@ -1,4 +1,6 @@
 using ApplicationService.BLL.Mappers;
+using ApplicationService.BLL.Models;
+using ApplicationService.BLL.Services;
 using ApplicationService.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +18,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ?? throw new Exception("Connection string not found");
     options.UseSqlServer(connectionString);
 });
+
+builder.Services.Configure<AmazonSettings>(builder.Configuration.GetSection("AmazonSettings"));
+
 builder.Services.AddAutoMapper(typeof(MapperProfile));
+builder.Services.AddScoped<IAmazonService, AmazonService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
