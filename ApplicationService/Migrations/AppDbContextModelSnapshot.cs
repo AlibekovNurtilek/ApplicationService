@@ -37,6 +37,10 @@ namespace ApplicationService.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<string>("DiplomImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DoB")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -73,6 +77,14 @@ namespace ApplicationService.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PassportBackImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PassportFrontImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -163,15 +175,16 @@ namespace ApplicationService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("GlobalExamId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserEmpId");
 
                     b.HasIndex("ApplicationUserStudId");
+
+                    b.HasIndex("GlobalExamId");
 
                     b.ToTable("Exams");
                 });
@@ -196,6 +209,38 @@ namespace ApplicationService.Migrations
                     b.HasIndex("ExamId");
 
                     b.ToTable("ExamImages");
+                });
+
+            modelBuilder.Entity("ApplicationService.DAL.Entities.GlobalExam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClassRoom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("GlobalExams");
                 });
 
             modelBuilder.Entity("ApplicationService.DAL.Entities.Grade", b =>
@@ -239,6 +284,9 @@ namespace ApplicationService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DiplomImage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -275,6 +323,8 @@ namespace ApplicationService.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Statements");
                 });
@@ -446,9 +496,17 @@ namespace ApplicationService.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ApplicationService.DAL.Entities.GlobalExam", "GlobalExam")
+                        .WithMany()
+                        .HasForeignKey("GlobalExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ApplicationUserEmp");
 
                     b.Navigation("ApplicationUserStud");
+
+                    b.Navigation("GlobalExam");
                 });
 
             modelBuilder.Entity("ApplicationService.DAL.Entities.ExamImage", b =>
@@ -460,6 +518,17 @@ namespace ApplicationService.Migrations
                         .IsRequired();
 
                     b.Navigation("Exam");
+                });
+
+            modelBuilder.Entity("ApplicationService.DAL.Entities.GlobalExam", b =>
+                {
+                    b.HasOne("ApplicationService.DAL.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("ApplicationService.DAL.Entities.Grade", b =>
@@ -487,6 +556,17 @@ namespace ApplicationService.Migrations
                     b.Navigation("ApplicationUserStud");
 
                     b.Navigation("Exam");
+                });
+
+            modelBuilder.Entity("ApplicationService.DAL.Entities.Statement", b =>
+                {
+                    b.HasOne("ApplicationService.DAL.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

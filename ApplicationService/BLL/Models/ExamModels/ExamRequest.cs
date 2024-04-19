@@ -9,6 +9,6 @@ namespace ApplicationService.BLL.Models.ExamModels
         public int GlobalExamId { get; set; }
 
         public string ApplicationUserStudId { get; set; }
-        public ICollection<ExamImage> ExamImages { get; set; }
+        public List<IFormFile> ExamImages { get; set; }
     }
 }

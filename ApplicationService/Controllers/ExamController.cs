@@ -38,7 +38,7 @@ namespace ApplicationService.Controllers
         [Route("CreateExam")]
         [HttpPost]
         
-        public async Task<ActionResult<ApiResponse>> CreateExam([FromBody] ExamRequest model)
+        public async Task<ActionResult<ApiResponse>> CreateExam([FromForm] ExamRequest model)
         {
             if (!ModelState.IsValid)
             {
