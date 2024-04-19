@@ -2,6 +2,7 @@ using ApplicationService.BLL.Mappers;
 using ApplicationService.BLL.Models;
 using ApplicationService.BLL.Services;
 using ApplicationService.DAL.Contexts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ?? throw new Exception("Connection string not found");
     options.UseSqlServer(connectionString);
 });
+
+// Add Identity
+builder.Services
+    .AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.Configure<AmazonSettings>(builder.Configuration.GetSection("AmazonSettings"));
 
