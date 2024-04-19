@@ -14,7 +14,7 @@ namespace ApplicationService.DAL.Contexts
         {
             base.OnModelCreating(builder);
         }
-
+        public DbSet<Statement> Statements { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Exam> Exams { get; set; }
         public DbSet<ExamImage> ExamImages { get; set; }
