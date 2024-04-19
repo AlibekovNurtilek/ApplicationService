@@ -4,6 +4,7 @@ using ApplicationService.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApplicationService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240419185335_EntitiesAdded")]
+    partial class EntitiesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,27 +112,6 @@ namespace ApplicationService.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ApplicationService.DAL.Entities.AvgGrade", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ApplicationUserId1")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId1");
-
-                    b.ToTable("AvgGrades");
-                });
-
             modelBuilder.Entity("ApplicationService.DAL.Entities.Department", b =>
                 {
                     b.Property<int>("Id")
@@ -145,90 +127,6 @@ namespace ApplicationService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Departments");
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.Exam", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApplicationUserEmpId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ApplicationUserStudId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserEmpId");
-
-                    b.HasIndex("ApplicationUserStudId");
-
-                    b.ToTable("Exams");
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.ExamImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ExamId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExamId");
-
-                    b.ToTable("ExamImages");
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.Grade", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApplicationUserEmpId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ApplicationUserStudId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ExamId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("StudGrade")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserEmpId");
-
-                    b.HasIndex("ApplicationUserStudId");
-
-                    b.HasIndex("ExamId");
-
-                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -375,72 +273,6 @@ namespace ApplicationService.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("ApplicationService.DAL.Entities.AvgGrade", b =>
-                {
-                    b.HasOne("ApplicationService.DAL.Contexts.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId1");
-
-                    b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.Exam", b =>
-                {
-                    b.HasOne("ApplicationService.DAL.Contexts.ApplicationUser", "ApplicationUserEmp")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserEmpId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApplicationService.DAL.Contexts.ApplicationUser", "ApplicationUserStud")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserStudId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUserEmp");
-
-                    b.Navigation("ApplicationUserStud");
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.ExamImage", b =>
-                {
-                    b.HasOne("ApplicationService.DAL.Entities.Exam", "Exam")
-                        .WithMany("ExamImages")
-                        .HasForeignKey("ExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Exam");
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.Grade", b =>
-                {
-                    b.HasOne("ApplicationService.DAL.Contexts.ApplicationUser", "ApplicationUserEmp")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserEmpId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApplicationService.DAL.Contexts.ApplicationUser", "ApplicationUserStud")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserStudId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApplicationService.DAL.Entities.Exam", "Exam")
-                        .WithMany()
-                        .HasForeignKey("ExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUserEmp");
-
-                    b.Navigation("ApplicationUserStud");
-
-                    b.Navigation("Exam");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -490,11 +322,6 @@ namespace ApplicationService.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.Exam", b =>
-                {
-                    b.Navigation("ExamImages");
                 });
 #pragma warning restore 612, 618
         }

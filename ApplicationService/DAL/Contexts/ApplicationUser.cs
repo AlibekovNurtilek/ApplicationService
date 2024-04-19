@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using ApplicationService.DAL.Entities;
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApplicationService.DAL.Contexts
 {
@@ -10,5 +12,9 @@ namespace ApplicationService.DAL.Contexts
         public string PhoneNumber { get; set; }
 
         public string DoB { get; set; }
+        [ForeignKey("DepartmentId")]
+        public int DepartmentId { get; set; }
+        public Department Department { get; set; }
+
     }
 }
