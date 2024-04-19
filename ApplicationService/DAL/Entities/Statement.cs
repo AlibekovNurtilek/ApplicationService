@@ -1,4 +1,6 @@
-﻿namespace ApplicationService.DAL.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ApplicationService.DAL.Entities
 {
     public class Statement
     {
@@ -13,5 +15,9 @@
         public string PassportFrontImage { get; set; }
         public string PassportBackImage { get;set; }
         public string DiplomImage { get; set; }
+
+        [ForeignKey("DepartmentId")]
+        public int DepartmentId { get; set; }
+        public Department Department { get; set; }  
     }
 }

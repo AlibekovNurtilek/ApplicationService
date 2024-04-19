@@ -39,6 +39,7 @@ namespace ApplicationService.BLL.Services
                     Phone = model.PhoneNumber,
                     DoB = model.DoB,
                     IsMagistr = model.IsMagistr,
+                    DepartmentId = model.DepartmentId,
                 };
                 var passportFrontBase64 = await ConvertToBase64(model.PassportFront);
                 var passportBackBase64 = await ConvertToBase64(model.PassportBack);

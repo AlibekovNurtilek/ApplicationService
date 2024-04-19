@@ -20,6 +20,9 @@ namespace ApplicationService.BLL.Models.AuthModels
 
         public bool IsMagistr {  get; set; }
 
+        [Required]
+        public int DepartmentId { get; set; }
+
         public IFormFile PassportFront { get; set; }
         public IFormFile PassportBack { get; set; }
         public IFormFile DiplomImage { get; set; }
