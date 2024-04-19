@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using ApplicationService.DAL.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationService.DAL.Contexts
@@ -13,5 +14,6 @@ namespace ApplicationService.DAL.Contexts
         {
             base.OnModelCreating(builder);
         }
+        public DbSet<Statement> Statements { get; set; }
     }
 }

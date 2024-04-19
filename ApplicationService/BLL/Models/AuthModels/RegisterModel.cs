@@ -18,6 +18,8 @@ namespace ApplicationService.BLL.Models.AuthModels
 
         public string DoB { get; set; }
 
+        public bool IsMagistr {  get; set; }
+
         public IFormFile PassportFront { get; set; }
         public IFormFile PassportBack { get; set; }
         public IFormFile DiplomImage { get; set; }
