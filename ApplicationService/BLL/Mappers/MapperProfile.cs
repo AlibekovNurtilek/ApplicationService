@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using ApplicationService.BLL.Models.ExamModels;
+using ApplicationService.DAL.Entities;
+using AutoMapper;
 
 namespace ApplicationService.BLL.Mappers
 {
@@ -6,7 +8,9 @@ namespace ApplicationService.BLL.Mappers
     {
         public MapperProfile()
         {
-            //CreateMap<AreaRequest, Area>();
+            CreateMap<ExamRequest, Exam>();
+            CreateMap<Exam, ExamResponse>();
+            
         }
     }
 }
