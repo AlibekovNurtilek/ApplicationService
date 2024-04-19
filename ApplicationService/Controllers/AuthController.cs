@@ -30,5 +30,17 @@ namespace ApplicationService.Controllers
             }
             return BadRequest(ModelState);
         }
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login([FromBody]LoginModel loginModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _authService.LoginAsync(loginModel);
+                if(result.Success)return Ok(result);
+                return BadRequest(result.Message);
+            }
+            return BadRequest(ModelState);
+        }
     }
 }

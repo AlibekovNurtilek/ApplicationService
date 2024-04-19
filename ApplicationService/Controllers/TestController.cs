@@ -14,12 +14,15 @@ namespace ApplicationService.Controllers
     public class TestController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+
         private readonly AppDbContext _dbContext;
 
-        public TestController(RoleManager<IdentityRole> roleManager, AppDbContext dbContext)
+        public TestController(RoleManager<IdentityRole> roleManager, AppDbContext dbContext, UserManager<ApplicationUser> userManager)
         {
             _roleManager = roleManager;
             _dbContext = dbContext;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -64,6 +67,33 @@ namespace ApplicationService.Controllers
         {
             var departments =  await _dbContext.Departments.ToListAsync();
             return Ok(departments);
+        }
+
+        [HttpPost]
+        [Route("CreateTestUser")]
+        public async Task<IActionResult> CreateTestUser([FromBody]LoginModel login)
+        {
+            var user = new ApplicationUser
+            {
+                Email = login.Email,
+                UserName = login.Email,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                DepartmentId = 1
+            };
+            var createUserResult = await _userManager.CreateAsync(user, login.Password);
+            if (!createUserResult.Succeeded)
+            {
+                var errorString = "Users Creation Failed Beacause: ";
+                foreach (var error in createUserResult.Errors)
+                {
+                    errorString += " # " + error.Description;
+                }
+                return BadRequest(errorString);
+               
+             
+            }
+            await _userManager.AddToRoleAsync(user, StaticUserRole.BOLUMBASKAN);
+            return Ok("Users Created Successfully");
         }
     }
 }

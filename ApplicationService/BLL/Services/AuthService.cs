@@ -6,22 +6,33 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics.Contracts;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ApplicationService.BLL.Services
 {
     public interface IAuthService
     {
         public Task<AuthResponse> RegisterAsync(RegisterModel model);
+        public Task<AuthResponse> LoginAsync(LoginModel model);
     }
     public class AuthService : IAuthService
     {
        
         private readonly AppDbContext _context;
         private readonly IAmazonService _amazonService;
-        public AuthService(AppDbContext context, IAmazonService amazonService)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IConfiguration _configuration;
+
+        public AuthService(AppDbContext context, IAmazonService amazonService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _context = context;
             _amazonService = amazonService;
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _configuration = configuration;
         }
 
         public async Task<AuthResponse> RegisterAsync(RegisterModel model)
@@ -77,5 +88,69 @@ namespace ApplicationService.BLL.Services
                 return $"data:{photo.ContentType};base64,{base64String}";
             }
         }
+
+        public async Task<AuthResponse> LoginAsync(LoginModel model)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, model.Password);
+                if (!isPasswordCorrect)
+                    return new AuthResponse()
+                    {
+                        Success = false,
+                        Message = "Invalid Credentials"
+                    };
+                var tokenObject = await GenerateNewJsonWebToken(user);
+                var JwtToken = new JwtSecurityTokenHandler().WriteToken(tokenObject);
+
+                return new AuthResponse()
+                {
+                    Success = true,
+                    AccessToken = JwtToken,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new AuthResponse()
+                {
+                    Message = ex.Message,
+                };
+            }
+           
+        }
+        private async Task<JwtSecurityToken> GenerateNewJsonWebToken(ApplicationUser user)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString())
+
+            };
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            var authSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+            string expiryTimeFrameValue = _configuration["JWT:ExpiryTimeFrame"];
+
+            TimeSpan expiryTimeFrame = TimeSpan.Parse(expiryTimeFrameValue);
+
+
+            var tokenObject = new JwtSecurityToken(
+                    issuer: _configuration["JWT:ValidIssuer"],
+                    audience: _configuration["JWT:ValidAudience"],
+                    expires: DateTime.UtcNow.Add(expiryTimeFrame),
+                    claims: claims,
+                    signingCredentials: new SigningCredentials(authSecret, SecurityAlgorithms.HmacSha256)
+                );
+
+            return tokenObject;
+        }
+
     }
 }

@@ -2,8 +2,11 @@ using ApplicationService.BLL.Mappers;
 using ApplicationService.BLL.Models;
 using ApplicationService.BLL.Services;
 using ApplicationService.DAL.Contexts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultString")
+    var connectionString = builder.Configuration.GetConnectionString("NurtilekConnection")
         ?? throw new Exception("Connection string not found");
     options.UseSqlServer(connectionString);
 });
@@ -26,7 +29,49 @@ builder.Services
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+
+//Configure AccessToken Validation Parameters
+var tokenValidationParameters = new TokenValidationParameters()
+{
+    ValidateIssuer = true,
+    ValidateAudience = true,
+    ClockSkew = TimeSpan.Zero,
+    ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+    ValidAudience = builder.Configuration["JWT:ValidAudience"],
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+};
+
+// Add Authentication and JwtBearer + GoogleAuth
+
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = tokenValidationParameters;
+    });
+
+// Добавить поддержку cookies, если она еще не была добавлена
+builder.Services.AddAuthentication().AddCookie();
+
 builder.Services.Configure<AmazonSettings>(builder.Configuration.GetSection("AmazonSettings"));
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Установка параметров валидации пароля
+    options.Password.RequireDigit = false; // Требование цифры
+    options.Password.RequiredLength = 4; // Минимальная длина пароля
+    options.Password.RequireNonAlphanumeric = false; // Требование неалфавитно-цифрового символа
+    options.Password.RequireUppercase = false; // Требование символа в верхнем регистре
+    options.Password.RequireLowercase = true; // Требование символа в нижнем регистре
+    options.Password.RequiredUniqueChars = 1; // Минимальное количество уникальных символов в пароле
+});
+
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 builder.Services.AddScoped<IAmazonService, AmazonService>();
