@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ApplicationService.BLL.Models.AuthModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationService.Controllers
@@ -7,9 +8,10 @@ namespace ApplicationService.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
-        [HttpGet]
-        public string Get()
+        [HttpPost]
+        public string Get([FromForm]RegisterModel registerModel)
         {
+            
             return "Hello guys Team Best coder";
         }
     }
