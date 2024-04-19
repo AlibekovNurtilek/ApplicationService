@@ -1,4 +1,6 @@
-﻿using ApplicationService.BLL.Models.ExamModels;
+﻿using Amazon.Auth.AccessControlPolicy;
+using Amazon.Runtime;
+using ApplicationService.BLL.Models.ExamModels;
 using ApplicationService.BLL.Models.Responses;
 using ApplicationService.DAL.Contexts;
 using ApplicationService.DAL.Entities;
@@ -20,10 +22,14 @@ namespace ApplicationService.BLL.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        public ExamService(AppDbContext context, IMapper mapper)
+        private readonly IAmazonService _amazonService;
+
+        public ExamService(AppDbContext context, IMapper mapper, IAmazonService amazonService)
         {
             _context = context;
             _mapper = mapper;
+            _amazonService = amazonService;
+
         }
 
         public async Task<ApiResponse> CreateExam(string empId,ExamRequest model)
@@ -36,6 +42,14 @@ namespace ApplicationService.BLL.Services
             //{
             //    return new ApiResponse() { Message = "Exam added allready", Success = false };
             //}
+            var imageList = new List<ExamImage>();
+            foreach(var item in model.ExamImages)
+            {
+                var passportFrontBase64 = await ConvertToBase64(item);
+                var image = new ExamImage();
+                image.url =  await _amazonService.UploadImage(passportFrontBase64);
+                imageList.Add(image);
+            }
             var result = _mapper.Map<Exam>(model);
             result.ApplicationUserEmpId= empId;
             _context.Exams.Add(result);
@@ -94,6 +108,21 @@ namespace ApplicationService.BLL.Services
             result.ApplicationUserStudId = model.ApplicationUserStudId;
             await _context.SaveChangesAsync();
             return true;
+        }
+        private async Task<string> ConvertToBase64(IFormFile photo)
+        {
+            if (photo == null || photo.Length == 0)
+            {
+                throw new ArgumentException("Фото не может быть пустым");
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                await photo.CopyToAsync(ms);
+                byte[] photoBytes = ms.ToArray();
+                string base64String = Convert.ToBase64String(photoBytes);
+                return $"data:{photo.ContentType};base64,{base64String}";
+            }
         }
     }
 }
