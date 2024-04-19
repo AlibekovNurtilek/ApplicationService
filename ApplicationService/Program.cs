@@ -1,4 +1,5 @@
 using ApplicationService.BLL.Mappers;
+using ApplicationService.BLL.Models;
 using ApplicationService.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<AmazonSettings>(builder.Configuration.GetSection("AmazonSettings"));
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultString")
