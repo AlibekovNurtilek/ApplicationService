@@ -32,10 +32,10 @@ namespace ApplicationService.BLL.Services
             {
                 return new ApiResponse() { Message = "No Content", Success = false };
             }
-            if (await CheckName(model.Name!))
-            {
-                return new ApiResponse() { Message = "Exam added allready", Success = false };
-            }
+            //if (await CheckName(model.Name!))
+            //{
+            //    return new ApiResponse() { Message = "Exam added allready", Success = false };
+            //}
             var result = _mapper.Map<Exam>(model);
             result.ApplicationUserEmpId= empId;
             _context.Exams.Add(result);
@@ -75,11 +75,11 @@ namespace ApplicationService.BLL.Services
             return new ApiResponse() { Message = "ERROR ACCURED", Success = false };
         }
         //Helper Methods
-        private async Task<bool> CheckName(string name)
-        {
-            var DoesExist = await _context.Exams.Where(h => h.Name!.ToLower().Equals(name.ToLower())).FirstOrDefaultAsync();
-            return DoesExist == null ? false : true;
-        }
+        //private async Task<bool> CheckName(string name)
+        //{
+        //    var DoesExist = await _context.Exams.Where(h => h.Name!.ToLower().Equals(name.ToLower())).FirstOrDefaultAsync();
+        //    return DoesExist == null ? false : true;
+        //}
         private async Task<bool> Delete(int id)
         {
             var result = _context.Exams.FirstOrDefault(h => h.Id == id);
@@ -91,7 +91,6 @@ namespace ApplicationService.BLL.Services
         {
             var result = await _context.Exams.FirstOrDefaultAsync(u => u.Id == id);
             if (result == null) { return false; }
-            result.Name = model.Name;
             result.ApplicationUserStudId = model.ApplicationUserStudId;
             await _context.SaveChangesAsync();
             return true;

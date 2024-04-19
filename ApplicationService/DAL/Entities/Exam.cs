@@ -6,7 +6,9 @@ namespace ApplicationService.DAL.Entities
     public class Exam
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        [ForeignKey("GlobalExamId")]
+        public int GlobalExamId { get; set; }
+        public virtual GlobalExam GlobalExam { get; set; }
         [ForeignKey("ApplicationUserStudId")]
         public string ApplicationUserStudId { get; set; }
         public virtual ApplicationUser ApplicationUserStud { get; set; }
@@ -14,5 +16,6 @@ namespace ApplicationService.DAL.Entities
         public string ApplicationUserEmpId { get; set; }
         public virtual ApplicationUser ApplicationUserEmp { get; set; }
         public ICollection<ExamImage> ExamImages { get; set; }
+
     }
 }

@@ -7,9 +7,10 @@ namespace ApplicationService.BLL.Models.ExamModels
     public class ExamResponse
     {
         public int Id { get; set; }
-        public string Name { get; set; }
         public virtual ApplicationUser ApplicationUserStud { get; set; }
         public virtual ApplicationUser ApplicationUserEmp { get; set; }
+        public virtual GlobalExam GlobalExam { get; set; }
+
         public ICollection<ExamImage> ExamImages { get; set; }
     }
 }

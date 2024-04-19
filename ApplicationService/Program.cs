@@ -24,6 +24,9 @@ builder.Services.Configure<AmazonSettings>(builder.Configuration.GetSection("Ama
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 builder.Services.AddScoped<IAmazonService, AmazonService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IExamService, ExamService>();
+builder.Services.AddScoped<IGlobalExamService, GlobalExamService>();
+
 
 var app = builder.Build();
 

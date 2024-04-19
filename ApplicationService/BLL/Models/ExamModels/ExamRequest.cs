@@ -6,7 +6,8 @@ namespace ApplicationService.BLL.Models.ExamModels
 {
     public class ExamRequest
     {
-        public string Name { get; set; }
+        public int GlobalExamId { get; set; }
+
         public string ApplicationUserStudId { get; set; }
         public ICollection<ExamImage> ExamImages { get; set; }
     }
