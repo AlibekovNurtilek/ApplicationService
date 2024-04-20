@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultString")
+    var connectionString = builder.Configuration.GetConnectionString("NurtilekConnection")
         ?? throw new Exception("Connection string not found");
     options.UseSqlServer(connectionString);
 });
@@ -28,30 +28,19 @@ builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
-builder.Services.AddCors(options =>
+
+// Config Identity
+builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.AddPolicy("AllowAnyOrigin", builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
+    options.Password.RequiredLength = 3;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.SignIn.RequireConfirmedEmail = false;
 });
 
-
-//Configure AccessToken Validation Parameters
-var tokenValidationParameters = new TokenValidationParameters()
-{
-    ValidateIssuer = true,
-    ValidateAudience = false,
-    ClockSkew = TimeSpan.Zero,
-    ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-    ValidAudience = builder.Configuration["JWT:ValidAudience"],
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
-};
-
-// Add Authentication and JwtBearer + GoogleAuth
-
+// Add Authentication and JwtBearer
 builder.Services
     .AddAuthentication(options =>
     {
@@ -63,23 +52,40 @@ builder.Services
     {
         options.SaveToken = true;
         options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters = tokenValidationParameters;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+            ValidAudience = builder.Configuration["JWT:ValidAudience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+        };
     });
 
-// Добавить поддержку cookies, если она еще не была добавлена
-builder.Services.AddAuthentication();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
+
+
 
 builder.Services.Configure<AmazonSettings>(builder.Configuration.GetSection("AmazonSettings"));
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    // Установка параметров валидации пароля
-    options.Password.RequireDigit = false; // Требование цифры
-    options.Password.RequiredLength = 4; // Минимальная длина пароля
-    options.Password.RequireNonAlphanumeric = false; // Требование неалфавитно-цифрового символа
-    options.Password.RequireUppercase = false; // Требование символа в верхнем регистре
-    options.Password.RequireLowercase = true; // Требование символа в нижнем регистре
-    options.Password.RequiredUniqueChars = 1; // Минимальное количество уникальных символов в пароле
-});
+//builder.Services.Configure<IdentityOptions>(options =>
+//{
+//    // Установка параметров валидации пароля
+//    options.Password.RequireDigit = false; // Требование цифры
+//    options.Password.RequiredLength = 4; // Минимальная длина пароля
+//    options.Password.RequireNonAlphanumeric = false; // Требование неалфавитно-цифрового символа
+//    options.Password.RequireUppercase = false; // Требование символа в верхнем регистре
+//    options.Password.RequireLowercase = true; // Требование символа в нижнем регистре
+//    options.Password.RequiredUniqueChars = 1; // Минимальное количество уникальных символов в пароле
+//});
 
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
@@ -98,10 +104,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseSwagger();
-app.UseSwaggerUI();
-app.UseCors("AllowAnyOrigin");
-
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

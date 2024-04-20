@@ -130,8 +130,7 @@ namespace ApplicationService.BLL.Services
             {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString())
+                new Claim("JWTID", Guid.NewGuid().ToString())
 
             };
             foreach (var userRole in userRoles)
@@ -147,7 +146,7 @@ namespace ApplicationService.BLL.Services
             var tokenObject = new JwtSecurityToken(
                     issuer: _configuration["JWT:ValidIssuer"],
                     audience: _configuration["JWT:ValidAudience"],
-                    expires: DateTime.UtcNow.Add(expiryTimeFrame),
+                    expires: DateTime.Now.AddHours(1),
                     claims: claims,
                     signingCredentials: new SigningCredentials(authSecret, SecurityAlgorithms.HmacSha256)
                 );
