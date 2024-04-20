@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("NurtilekConnection")
+    var connectionString = builder.Configuration.GetConnectionString("DefaultString")
         ?? throw new Exception("Connection string not found");
     options.UseSqlServer(connectionString);
 });
@@ -87,6 +87,7 @@ builder.Services.AddScoped<IAmazonService, AmazonService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<IGlobalExamService, GlobalExamService>();
+builder.Services.AddScoped<IGradeService, GradeService>();
 
 
 var app = builder.Build();

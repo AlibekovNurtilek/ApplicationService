@@ -34,17 +34,17 @@ namespace ApplicationService.Controllers
             return Ok(roles);
         }
 
-        [HttpGet]
-        [Route("Seed-Roles")]
-        public async Task<IActionResult> SeedRoles()
-        {
-            await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.STUDENT });
-            await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.SUPERADMIN });
-            await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.BOLUMBASKAN });
-            await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.SECRETAR });
-            await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.COMISSION });
-            return Ok();
-        }
+        //[HttpGet]
+        //[Route("Seed-Roles")]
+        //public async Task<IActionResult> SeedRoles()
+        //{
+        //    await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.STUDENT });
+        //    await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.SUPERADMIN });
+        //    await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.BOLUMBASKAN });
+        //    await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.SECRETAR });
+        //    await _roleManager.CreateAsync(new IdentityRole { Name = StaticUserRole.COMISSION });
+        //    return Ok();
+        //}
 
         [HttpPost]
         [Route("AddDepartments")]
