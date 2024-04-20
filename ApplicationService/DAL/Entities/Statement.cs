@@ -12,6 +12,8 @@ namespace ApplicationService.DAL.Entities
         public string DoB { get; set; }
 
         public bool IsMagistr {  get; set; }    
+
+        public bool IsAccespted { get; set; }
         public string PassportFrontImage { get; set; }
         public string PassportBackImage { get;set; }
         public string DiplomImage { get; set; }
