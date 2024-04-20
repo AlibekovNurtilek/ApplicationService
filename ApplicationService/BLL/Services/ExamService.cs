@@ -50,9 +50,13 @@ namespace ApplicationService.BLL.Services
                 image.url =  await _amazonService.UploadImage(passportFrontBase64);
                 imageList.Add(image);
             }
-            var result = _mapper.Map<Exam>(model);
-            result.ApplicationUserEmpId= empId;
-            _context.Exams.Add(result);
+            var exam = new Exam();
+            exam.ApplicationUserStudId = model.ApplicationUserStudId;
+            exam.ApplicationUserEmpId = empId;
+            exam.GlobalExamId = model.GlobalExamId;
+            exam.ExamImages = imageList;
+            //var result = _mapper.Map<Exam>(model);
+            _context.Exams.Add(exam);
             await _context.SaveChangesAsync();
             return new ApiResponse() { Message = "Exam successfully added :)" };
         }
