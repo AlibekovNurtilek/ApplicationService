@@ -27,7 +27,7 @@ namespace ApplicationService.Controllers
             _emailService = emailService;
         }
 
-        [Authorize("SECRETAR")]
+        [Authorize]
         [HttpGet]
         [Route("GetAllStatementsBydepartment")]
 
@@ -56,7 +56,7 @@ namespace ApplicationService.Controllers
 
         }
 
-        [Authorize("SECRETAR")]
+        [Authorize]
         [HttpPost]
         [Route("AccesptStatement")]
         public async Task<IActionResult> AccesptStatrement([FromBody] int statementId)
@@ -113,7 +113,7 @@ namespace ApplicationService.Controllers
 
         }
 
-        [Authorize("SECRETAR")]
+        [Authorize]
         [HttpPost]
         [Route("NotAccesptStatement")]
         public async Task<IActionResult> NotAccesptStatrement([FromBody] int statementId)
