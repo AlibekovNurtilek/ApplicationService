@@ -74,7 +74,7 @@ builder.Services.AddCors(options =>
 
 
 
-
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<AmazonSettings>(builder.Configuration.GetSection("AmazonSettings"));
 //builder.Services.Configure<IdentityOptions>(options =>
 //{
@@ -94,6 +94,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<IGlobalExamService, GlobalExamService>();
 builder.Services.AddScoped<IGradeService, GradeService>();
+builder.Services.AddScoped<IEmailService, EmailService>();  
 
 
 var app = builder.Build();
