@@ -108,9 +108,11 @@ namespace ApplicationService.Controllers
                 var exam = await _appContext.GlobalExams.Where(u=>u.Id==id).FirstOrDefaultAsync();
                 if (exam is null)
                     return BadRequest("Exam not found");
-                var usersInDepartment = await _userManager.Users
-                    .Where(u => u.DepartmentId == exam.DepartmentId)
-                    .ToListAsync();
+                
+
+                var user = await _userManager.GetUsersInRoleAsync("STUDENT");
+                var usersInDepartment =  user.Where(u => u.DepartmentId == exam.DepartmentId).ToList();
+                    
 
                 return Ok(usersInDepartment);
             }
@@ -119,7 +121,6 @@ namespace ApplicationService.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            return Ok("Success");
         }
     
 
