@@ -14,6 +14,9 @@ namespace ApplicationService.DAL.Entities
 
         public int DepartmentId { get; set; }
         public Department Department { get; set; }
+
+        [ForeignKey("ExamId")]
+        public int ExamId { get; set; }
         public ICollection<Exam> Exam { get; set; }
         public ICollection<GlobalExamStudent> GlobalExamStudents { get; set; }
         
