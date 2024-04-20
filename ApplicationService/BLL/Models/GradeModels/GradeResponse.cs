@@ -7,6 +7,7 @@ namespace ApplicationService.BLL.Models.GradeModels
     public class GradeResponse
     {
         public int Id { get; set; }
+
         public virtual Exam Exam { get; set; }
         public virtual ApplicationUser ApplicationUserStud { get; set; }
         public virtual ApplicationUser ApplicationUserEmp { get; set; }

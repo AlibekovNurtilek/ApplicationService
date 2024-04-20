@@ -15,6 +15,7 @@ namespace ApplicationService.BLL.Services
         Task<ApiResponse> DeleteGlobalExam(int id);
         Task<GlobalExamResponse> GetSingleGlobalExam(int id);
         Task<List<GlobalExamResponse>> GetAllGlobalExam();
+
     }
     public class GlobalExamService : IGlobalExamService
     {
@@ -55,7 +56,9 @@ namespace ApplicationService.BLL.Services
 
         public async Task<List<GlobalExamResponse>> GetAllGlobalExam()
         {
-            var result = await _context.GlobalExams.Include(u=>u.Department).ToListAsync();
+            var result = await _context.GlobalExams.Include(u=>u.Department)
+                .Include(u=>u.Exam)
+                .ToListAsync();
             return _mapper.Map<List<GlobalExamResponse>>(result);
         }
 

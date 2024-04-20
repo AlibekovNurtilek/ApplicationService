@@ -31,11 +31,19 @@ namespace ApplicationService.Controllers
         }
         [Route("GetAllGrade")]
         [HttpGet]
-        [Authorize]
 
         public async Task<ActionResult<List<GradeResponse>>> GetAllGrade()
         {
             var result = await _service.GetAllGrade();
+            return result == null ? NotFound("No data found from the database!") : Ok(result);
+        }
+        
+        [Route("GetAllGradeById")]
+        [HttpGet]
+
+        public async Task<ActionResult<List<GradeResponse>>> GetAllGradeByUserId([FromQuery] string id)
+        {
+            var result = await _service.GetAllGradeByStudId(id);
             return result == null ? NotFound("No data found from the database!") : Ok(result);
         }
         [Route("CreateGrade")]
