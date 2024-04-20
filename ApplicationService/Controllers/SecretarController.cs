@@ -7,10 +7,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Web;
 
 namespace ApplicationService.Controllers
 {
+    public class StatementModel
+    {
+        public int statementId { get; set; }
+    }
+
+    public class ExamModel
+    {
+        public int examId { get; set; }
+    }
     [Route("api/[controller]")]
     [ApiController]
     public class SecretarController : ControllerBase
@@ -19,15 +29,17 @@ namespace ApplicationService.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailService _emailService;
-        public SecretarController(AppDbContext appContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IEmailService emailService)
+        private readonly IGlobalExamService _globalExamService;
+        public SecretarController(AppDbContext appContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IEmailService emailService, IGlobalExamService globalExamService)
         {
             _appContext = appContext;
             _userManager = userManager;
             _roleManager = roleManager;
             _emailService = emailService;
+            _globalExamService = globalExamService;
         }
 
-        [Authorize("SECRETAR")]
+        [Authorize(Roles = ("SECRETAR"))]
         [HttpGet]
         [Route("GetAllStatementsBydepartment")]
 
@@ -56,14 +68,70 @@ namespace ApplicationService.Controllers
 
         }
 
-        [Authorize("SECRETAR")]
-        [HttpPost]
-        [Route("AccesptStatement")]
-        public async Task<IActionResult> AccesptStatrement([FromBody] int statementId)
+
+        [Authorize(Roles = ("SECRETAR"))]
+        [HttpGet]
+        [Route("GetAllGlobalExamsBydepartment")]
+
+        public async Task<IActionResult> GetAllGlobalExamsBydepartment()
         {
             try
             {
-                var statement = await _appContext.Statements.Where(u => u.Id == statementId).FirstOrDefaultAsync();
+                var currentUSerID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (currentUSerID == null)
+                    return NotFound("Secretar not found");
+                var secretar = await _userManager.FindByIdAsync(currentUSerID);
+                if (secretar == null)
+                    return NotFound("Secretar not found");
+
+                var globalExams = await _appContext.GlobalExams.Where(u => u.DepartmentId == secretar.DepartmentId).ToListAsync();
+
+                //var statements = await _userManager.Users.Where(u => u.DepartmentId == secretar.DepartmentId).ToListAsync();
+                return Ok(globalExams);
+            }
+            catch (Exception ex)
+            {
+                // Возврат ошибки сервера с текстом ошибки
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+
+        }
+        [Authorize(Roles = ("SECRETAR"))]
+        [HttpGet]
+        [Route("GetAllStudentsByGlobalExamId")]
+        public async Task<IActionResult> GetAllStudentsByGlobalExamId([FromQuery] int id)
+        {
+            try
+            {
+
+                var exam = await _appContext.GlobalExams.Where(u=>u.Id==id).FirstOrDefaultAsync();
+                if (exam is null)
+                    return BadRequest("Exam not found");
+                var usersInDepartment = await _userManager.Users
+                    .Where(u => u.DepartmentId == exam.DepartmentId)
+                    .ToListAsync();
+
+                return Ok(usersInDepartment);
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok("Success");
+        }
+    
+
+
+        [Authorize(Roles =("SECRETAR"))]
+        [HttpPost]
+        [Route("AccesptStatement")]
+        public async Task<IActionResult> AccesptStatrement([FromBody] StatementModel model)
+        {
+            try
+            {
+                var statement = await _appContext.Statements.Where(u => u.Id == model.statementId).FirstOrDefaultAsync();
                 if (statement == null)
                     return NotFound("this statement not found");
                 var user = new ApplicationUser
@@ -113,14 +181,14 @@ namespace ApplicationService.Controllers
 
         }
 
-        [Authorize("SECRETAR")]
+        [Authorize(Roles = ("SECRETAR"))]
         [HttpPost]
         [Route("NotAccesptStatement")]
-        public async Task<IActionResult> NotAccesptStatrement([FromBody] int statementId)
+        public async Task<IActionResult> NotAccesptStatrement([FromBody] StatementModel model)
         {
             try
             {
-                var statement = await _appContext.Statements.Where(u => u.Id == statementId).FirstOrDefaultAsync();
+                var statement = await _appContext.Statements.Where(u => u.Id == model.statementId).FirstOrDefaultAsync();
                 if (statement == null)
                     return NotFound("this statement not found");
                 await SendNotConfirmEmail(statement.Email);

@@ -15,6 +15,8 @@ namespace ApplicationService.BLL.Services
         Task<ApiResponse> DeleteGrade(int id);
         Task<GradeResponse> GetSingleGrade(int id);
         Task<List<GradeResponse>> GetAllGrade();
+        Task<List<GradeResponse>> GetAllGradeByStudId(string Id);
+
     }
     public class GradeService : IGradeService
     {
@@ -61,6 +63,12 @@ namespace ApplicationService.BLL.Services
         public async Task<List<GradeResponse>> GetAllGrade()
         {
             var result = await _context.Grades.ToListAsync();
+            return _mapper.Map<List<GradeResponse>>(result);
+        }
+
+        public async Task<List<GradeResponse>> GetAllGradeByStudId(string Id)
+        {
+            var result = await _context.Grades.Include(u=>u.ApplicationUserStud).Where(u=>u.ApplicationUserStudId==Id).ToListAsync();
             return _mapper.Map<List<GradeResponse>>(result);
         }
 
