@@ -26,6 +26,15 @@ namespace ApplicationService.Controllers
             var result = await _service.GetSingleExam(id);
             return result == null ? NotFound("No data found from the database!") : Ok(result);
         }
+        [HttpGet]
+        [Route("GetSingleExamById")]
+
+        public async Task<ActionResult<ExamResponse>> GetSingleExamById([FromQuery] string id)
+        {
+            if (id == null) { return BadRequest("ID cannot be less than 0 or equal"); }
+            var result = await _service.GetSingleExam(id);
+            return result == null ? NotFound("No data found from the database!") : Ok(result);
+        }
         [Route("GetAllExam")]
         [HttpGet]
         
@@ -34,16 +43,17 @@ namespace ApplicationService.Controllers
             var result = await _service.GetAllExam();
             return result == null ? NotFound("No data found from the database!") : Ok(result);
         }
+
         [Route("CreateExam")]
         [HttpPost]
-        
+        [Authorize]
         public async Task<ActionResult<ApiResponse>> CreateExam([FromForm] ExamRequest model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var currentUserId = "0bfeda6d-dc31-4aaf-bd77-05049d1ad8f3"; //User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (currentUserId == null)
             {
                 return Unauthorized("UserID Not found");

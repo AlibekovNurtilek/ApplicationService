@@ -17,6 +17,7 @@ namespace ApplicationService.BLL.Services
         Task<ApiResponse> DeleteExam(int id);
         Task<ExamResponse> GetSingleExam(int id);
         Task<List<ExamResponse>> GetAllExam();
+        Task<ExamResponse> GetSingleExam(string id);
     }
     public class ExamService : IExamService
     {
@@ -79,7 +80,13 @@ namespace ApplicationService.BLL.Services
 
         public async Task<ExamResponse> GetSingleExam(int id)
         {
-            var result = await _context.Exams.SingleOrDefaultAsync(u => u.Id == id);
+            var result = await _context.Exams.SingleOrDefaultAsync(u=>u.Id==id);
+            if (result == null) return null;
+            return _mapper.Map<ExamResponse>(result);
+        }
+        public async Task<ExamResponse> GetSingleExam(string id)
+        {
+            var result = await _context.Exams.SingleOrDefaultAsync(u => u.ApplicationUserStudId == id);
             if (result == null) return null;
             return _mapper.Map<ExamResponse>(result);
         }

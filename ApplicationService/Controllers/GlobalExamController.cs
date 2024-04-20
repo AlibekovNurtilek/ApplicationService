@@ -31,7 +31,6 @@ namespace ApplicationService.Controllers
         }
         [Route("GetAllGlobalExam")]
         [HttpGet]
-
         public async Task<ActionResult<List<GlobalExamResponse>>> GetAllGlobalExam()
         {
             var result = await _service.GetAllGlobalExam();
