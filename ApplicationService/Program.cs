@@ -43,7 +43,7 @@ builder.Services.AddCors(options =>
 var tokenValidationParameters = new TokenValidationParameters()
 {
     ValidateIssuer = true,
-    ValidateAudience = true,
+    ValidateAudience = false,
     ClockSkew = TimeSpan.Zero,
     ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
     ValidAudience = builder.Configuration["JWT:ValidAudience"],
@@ -67,7 +67,7 @@ builder.Services
     });
 
 // Добавить поддержку cookies, если она еще не была добавлена
-builder.Services.AddAuthentication().AddCookie();
+builder.Services.AddAuthentication();
 
 builder.Services.Configure<AmazonSettings>(builder.Configuration.GetSection("AmazonSettings"));
 builder.Services.Configure<IdentityOptions>(options =>
@@ -104,6 +104,7 @@ app.UseCors("AllowAnyOrigin");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
