@@ -20,6 +20,7 @@ namespace ApplicationService.DAL.Contexts
         public string? PassportFrontImage { get; set; }
         public string? PassportBackImage { get; set; }
         public string? DiplomImage { get; set; }
+        public ICollection<GlobalExamStudent> GlobalExamStudents { get; set; }
 
     }
 }

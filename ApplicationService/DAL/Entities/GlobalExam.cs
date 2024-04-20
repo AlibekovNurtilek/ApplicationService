@@ -14,8 +14,8 @@ namespace ApplicationService.DAL.Entities
 
         public int DepartmentId { get; set; }
         public Department Department { get; set; }
-        ICollection<Exam> Exam { get; set; }
-        ICollection<ApplicationUser> User { get; set; }
+        public ICollection<Exam> Exam { get; set; }
+        public ICollection<GlobalExamStudent> GlobalExamStudents { get; set; }
         
     }
 }
