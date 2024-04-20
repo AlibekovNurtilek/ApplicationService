@@ -4,6 +4,7 @@ using ApplicationService.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApplicationService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240420034335_UpdateUser")]
+    partial class UpdateUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -236,21 +239,6 @@ namespace ApplicationService.Migrations
                     b.HasIndex("DepartmentId");
 
                     b.ToTable("GlobalExams");
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.GlobalExamStudent", b =>
-                {
-                    b.Property<int>("GlobalExamId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("GlobalExamId", "ApplicationUserId");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("GlobalExamStudents");
                 });
 
             modelBuilder.Entity("ApplicationService.DAL.Entities.Grade", b =>
@@ -510,7 +498,7 @@ namespace ApplicationService.Migrations
                         .IsRequired();
 
                     b.HasOne("ApplicationService.DAL.Entities.GlobalExam", "GlobalExam")
-                        .WithMany("Exam")
+                        .WithMany()
                         .HasForeignKey("GlobalExamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -542,25 +530,6 @@ namespace ApplicationService.Migrations
                         .IsRequired();
 
                     b.Navigation("Department");
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.GlobalExamStudent", b =>
-                {
-                    b.HasOne("ApplicationService.DAL.Contexts.ApplicationUser", "ApplicationUser")
-                        .WithMany("GlobalExamStudents")
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApplicationService.DAL.Entities.GlobalExam", "GlobalExam")
-                        .WithMany("GlobalExamStudents")
-                        .HasForeignKey("GlobalExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("GlobalExam");
                 });
 
             modelBuilder.Entity("ApplicationService.DAL.Entities.Grade", b =>
@@ -652,21 +621,9 @@ namespace ApplicationService.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ApplicationService.DAL.Contexts.ApplicationUser", b =>
-                {
-                    b.Navigation("GlobalExamStudents");
-                });
-
             modelBuilder.Entity("ApplicationService.DAL.Entities.Exam", b =>
                 {
                     b.Navigation("ExamImages");
-                });
-
-            modelBuilder.Entity("ApplicationService.DAL.Entities.GlobalExam", b =>
-                {
-                    b.Navigation("Exam");
-
-                    b.Navigation("GlobalExamStudents");
                 });
 #pragma warning restore 612, 618
         }

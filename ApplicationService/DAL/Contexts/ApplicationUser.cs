@@ -16,6 +16,8 @@ namespace ApplicationService.DAL.Contexts
         public int DepartmentId { get; set; }
         public Department Department { get; set; }
 
+        public bool? IsMagistr {  get; set; }
+
         public string? ImagePath;
         public string? PassportFrontImage { get; set; }
         public string? PassportBackImage { get; set; }
