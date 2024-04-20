@@ -6,5 +6,6 @@
         public string? AccessToken { get; set; }
 
         public string? Message { get; set; }
+        public string? Role { get; set; }
     }
 }
