@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("NurtilekConnection")
+    var connectionString = builder.Configuration.GetConnectionString("DefaultString")
         ?? throw new Exception("Connection string not found");
     options.UseSqlServer(connectionString);
 });
@@ -28,6 +28,15 @@ builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 
 
 //Configure AccessToken Validation Parameters
@@ -90,6 +99,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseCors("AllowAnyOrigin");
 
 app.UseHttpsRedirection();
 
