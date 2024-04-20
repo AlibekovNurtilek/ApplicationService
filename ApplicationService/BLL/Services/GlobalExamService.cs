@@ -55,7 +55,7 @@ namespace ApplicationService.BLL.Services
 
         public async Task<List<GlobalExamResponse>> GetAllGlobalExam()
         {
-            var result = await _context.GlobalExams.ToListAsync();
+            var result = await _context.GlobalExams.Include(u=>u.Department).ToListAsync();
             return _mapper.Map<List<GlobalExamResponse>>(result);
         }
 

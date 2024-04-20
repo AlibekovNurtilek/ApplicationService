@@ -42,6 +42,7 @@ namespace ApplicationService.BLL.Services
             //}
             
             var result = _mapper.Map<Grade>(model);
+            result.ApplicationUserEmpId= empId;
             _context.Grades.Add(result);
             await _context.SaveChangesAsync();
             return new ApiResponse() { Message = "Grade successfully added :)" };
@@ -93,26 +94,13 @@ namespace ApplicationService.BLL.Services
         }
         private async Task<bool> Update(int id, GradeRequest model)
         {
-            var result = await _context.Exams.FirstOrDefaultAsync(u => u.Id == id);
+            var result = await _context.Grades.FirstOrDefaultAsync(u => u.Id == id);
             if (result == null) { return false; }
             result.ApplicationUserStudId = model.ApplicationUserStudId;
+            result.StudGrade=model.StudGrade;
             await _context.SaveChangesAsync();
             return true;
         }
-        private async Task<string> ConvertToBase64(IFormFile photo)
-        {
-            if (photo == null || photo.Length == 0)
-            {
-                throw new ArgumentException("Фото не может быть пустым");
-            }
-
-            using (var ms = new MemoryStream())
-            {
-                await photo.CopyToAsync(ms);
-                byte[] photoBytes = ms.ToArray();
-                string base64String = Convert.ToBase64String(photoBytes);
-                return $"data:{photo.ContentType};base64,{base64String}";
-            }
-        }
+        
     }
 }
