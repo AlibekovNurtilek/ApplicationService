@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultString")
+    var connectionString = builder.Configuration.GetConnectionString("NurtilekConnection")
         ?? throw new Exception("Connection string not found");
     options.UseSqlServer(connectionString);
 });

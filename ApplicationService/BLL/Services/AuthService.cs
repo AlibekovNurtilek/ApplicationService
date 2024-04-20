@@ -103,11 +103,14 @@ namespace ApplicationService.BLL.Services
                     };
                 var tokenObject = await GenerateNewJsonWebToken(user);
                 var JwtToken = new JwtSecurityTokenHandler().WriteToken(tokenObject);
+                var userRoles = await _userManager.GetRolesAsync(user);
+
 
                 return new AuthResponse()
                 {
                     Success = true,
                     AccessToken = JwtToken,
+                    Role = userRoles.FirstOrDefault()
                 };
             }
             catch (Exception ex)
